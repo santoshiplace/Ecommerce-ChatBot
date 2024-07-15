@@ -1454,6 +1454,17 @@
         }
     </style>
 </head>
+
+
+
+
+
+
+
+
+
+
+
 <body>
     <div class="chatbot-icon" onclick="toggleChatbot()">
         <img src="qw.jpg" alt="Myntra Mate Logo">
@@ -1466,6 +1477,9 @@
         <div class="chatbot-dialog-content" id="chatbotContent">
             <div class="bot-message">
                 How can I assist you today?
+                <button class="option-button" onclick="handleOption('productID')">
+                     Product
+                </button>
                 <button class="option-button" onclick="handleOption('trending')">
                     Trending Products
                 </button>
@@ -1536,6 +1550,9 @@
 
         async function handleOption(option) {
             switch (option) {
+                case 'productID':
+                    enterProductID();
+                    break;
                 case 'trending':
                     displayTrendingItems();
                     break;
@@ -1559,6 +1576,115 @@
                     break;
             }
         }
+        function enterProductID() {
+            displayMessage('Please enter the product ID:');
+            displayMessage(`
+                <div class="centered-box">
+                    <input type="text" id="productIDInput" class="address-input" placeholder="Enter Product ID">
+                    <button onclick="showProductOptions()">Submit</button>
+                </div>
+            `);
+        }
+
+        function showProductOptions() {
+            const productID = document.getElementById('productIDInput').value;
+            if (!productID) {
+                alert("Please enter a product ID.");
+                return;
+            }
+
+
+            
+            displayMessage(`You entered Product ID: ${productID}`);
+            displayMessage(`
+
+             <img src="glasses.jpg", alt="image"/>
+                <div class="horizontal-buttons">
+                   
+                    <button onclick="trackProduct('${productID}')">Track Product</button>
+                    <button onclick="productDetails('${productID}')">Product Details</button>
+                    <button onclick="priceTracking('${productID}')">Product Price Tracking</button>
+                    <button onclick="productReviews('${productID}')">Product Reviews</button>
+                    <button onclick="Cart('${productID}')">Cart</button>
+                     <button onclick="Buy now('${productID}')">Buy now</button>
+                </div>
+            `);
+        }
+
+        function trackProduct(productID) {
+            displayMessage(`Tracking information for Product ID: ${productID}...`);
+            // Simulate fetching tracking data
+            setTimeout(() => {
+                displayMessage(`Product ${productID} is currently in transit and will be delivered by tomorrow.`);
+            }, 2000);
+        }
+
+        function productDetails(productID) {
+            displayMessage(`Fetching details for Product ID: ${productID}...
+           <p> Lens colour: Black</p>
+Lens feature: UV Protected Lens
+Frame material: Plastic
+Frame style: Full Rim
+Best suited for: Long face shape
+Comes in a ROYAL SON cover
+<p>
+Material & Care
+Plastic
+Remove dust and grime by gently wiping the lens with a cloth
+</p>
+Specifications
+Type
+Oversized Sunglasses
+Lens Colour
+Purple
+Feature
+UV Protected Lens
+Style
+Full Rim
+Frame Colour
+Black
+Face Shape
+Long
+Case
+Soft Pouch
+Complete The Look
+These top-notch ROYAL SON oversized sunglasses will have you looking and feeling like a diva. Sport this black pair with slim jeans, a cute tank top, and ballerinas when you're going on a casual date.`);
+            // Simulate fetching product details
+            setTimeout(() => {
+                displayMessage(`Product ${productID} is a high-quality item with excellent reviews. It is available in various sizes and colors.`);
+            }, 2000);
+        }
+
+        function priceTracking(productID) {
+            displayMessage(`Activating price tracking for Product ID: ${productID}...`);
+            // Simulate price tracking
+            setTimeout(() => {
+                displayMessage(`You will be notified when the price of Product ${productID} drops.`);
+            }, 2000);
+        }
+
+        function productReviews(productID) {
+            displayMessage(`Fetching reviews for Product ID: ${productID}...`);
+            // Simulate fetching product reviews
+            setTimeout(() => {
+                displayMessage(`Product ${productID} has received excellent reviews with an average rating of 4.5 stars.`);
+            }, 2000);
+        }
+
+        function Cart(productID) {
+            displayMessage(`Adding to cart Product ID: ${productID}...`);
+            // Simulate fetching product reviews
+            setTimeout(() => {
+                displayMessage(`Product ${productID} has been added to cart sucessfully.`);
+            }, 2000);
+        }
+
+        
+
+
+
+
+        
         function displayTrendingItems() {
             var content = document.getElementById('chatbotContent');
             var trendingItems = document.createElement('div');
@@ -2034,7 +2160,17 @@ displayProductSwipe();
                 }
             }
             
-        
+       
+            
+
+
+
+
+
+
+
+
+            
 
         
 
@@ -2047,3 +2183,4 @@ displayProductSwipe();
 
 
 </html>
+
