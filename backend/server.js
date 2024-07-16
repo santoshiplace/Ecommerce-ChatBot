@@ -1,14 +1,53 @@
+
 import express from 'express';
 import bodyParser from 'body-parser';
 import fetch from 'node-fetch';
-import { config } from 'dotenv'; // Make sure to install dotenv package
 
-// Load environment variables from .env file
-config();
+//const app = express();
+const port = 3000; // Ensure this port is available
+const OPENAI_API_KEY = ''; // Replace with your actual API key
 
-const app = express();
-const port = process.env.PORT || 3000; // Use environment variable for port
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY; // Use environment variable for API key
+app.use(bodyParser.json());
+
+// Define a simple GET route for the root endpoint
+app.get('/', (req, res) => {
+    res.send('Hello, this is the root endpoint!');
+});
+
+// Define a POST route for the /chat endpoint
+app.post('/chat', async (req, res) => {
+    const userMessage = req.body.message;
+
+    try {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${OPENAI_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: "gpt-3.5-turbo",
+                messages: [{ role: "user", content: userMessage }],
+            })
+        });
+
+        const data = await response.json();
+        const reply = data.choices[0].message.content;
+
+        res.json({ reply });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'An error occurred' });
+    }
+});
+
+// Start the server
+app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+});
+const express = require('express');
+const bodyParser = require('body-parser');
+
 
 app.use(bodyParser.json());
 
@@ -27,68 +66,89 @@ const productData = [
     // Add more product data as needed
 ];
 
-// Define a simple GET route for the root endpoint
-app.get('/', (req, res) => {
-    res.send('Hello, this is the root endpoint!');
-});
-
-// Define a POST route for the /chat endpoint
-app.post('/chat', async (req, res) => {
-    const userMessage = req.body.message.toLowerCase().trim();
-
-    // Handle local product recommendations
+// Handle POST request to /chat endpoint
+app.post('/chat', (req, res) => {
+    const message = req.body.message.toLowerCase().trim();
     let reply = '';
-    if (userMessage.includes('summer styling')) {
+
+    // Example logic for different user queries
+    if (message.includes('summer styling')) {
         reply = "Summer calls for light and breezy outfits. How about a floral sundress paired with strappy sandals?";
-    } else if (userMessage.includes('floral sundresses')) {
+    } else if (message.includes('floral sundresses')) {
         reply = JSON.stringify(productData.filter(product => product.name.toLowerCase().includes('floral')));
     } else {
-        // If no local response is matched, query OpenAI API
-        try {
-            const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${OPENAI_API_KEY}`
-                },
-                body: JSON.stringify({
-                    model: "gpt-3.5-turbo",
-                    messages: [{ role: "user", content: userMessage }],
-                })
-            });
-
-            const data = await response.json();
-            reply = data.choices[0].message.content;
-        } catch (error) {
-            console.error('Error:', error);
-            reply = 'An error occurred while processing your request.';
-        }
+        reply = "Sorry, I didn't quite catch that. Can you please ask again?";
     }
 
     res.json({ reply: reply });
 });
 
-// Error handling for uncaught exceptions
-process.on('uncaughtException', (err) => {
-    console.log(`Error: ${err.message}`);
-    console.log('Shutting down server due to uncaught exception');
-    process.exit(1);
+// Start server
+app.listen(port, () => {
+    console.log(`Server is running at http://localhost:${port}`);
 });
 
-// Connect to the database (ensure you have a `connectDatabase` function implemented)
-// connectDatabase(); 
 
-// Start the server
-const server = app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-});
 
-// Error handling for unhandled promise rejections
-process.on('unhandledRejection', (err) => {
-    console.log(`Error: ${err.message}`);
-    console.log('Shutting down server due to unhandled promise rejection');
+const express = require('express');
+const bodyParser = require('body-parser');
+const { dialogflow } = require('dialogflow');
 
-    server.close(() => {
-        process.exit(1);
-    });
-});
+const app = express();
+app.use(bodyParser.json());
+
+const intentMap = new Map();
+intentMap.set('Order Tracking', orderTrackingIntent);
+intentMap.set('Weekly Trend Analysis', weeklyTrendAnalysisIntent);
+intentMap.set('Product ID', productIDIntent);
+
+async function orderTrackingIntent(agent) {
+  const orderID = agent.parameters.orderID;
+  const orderStatus = await getOrderStatus(orderID);
+  agent.add(`The status of your order is: ${orderStatus}`);
+}
+
+async function weeklyTrendAnalysisIntent(agent) {
+  const productCategory = agent.parameters.productCategory;
+  const trendAnalysis = await getWeeklyTrendAnalysis(productCategory);
+  agent.add(`Here is the weekly trend analysis for ${productCategory}: ${trendAnalysis}`);
+}
+
+async function productIDIntent(agent) {
+  const productID = agent.parameters.productID;
+  const productInfo = await getProductInfo(productID);
+  agent.add(`Here is the information for product ${productID}: ${productInfo}`);
+}
+
+async function getOrderStatus(orderID) {
+    // Call API to get order status
+    const response = await fetch(`(link unavailable));
+    const data = await response.json();
+    return data.status;
+  }
+  
+  async function getWeeklyTrendAnalysis(productCategory) {
+    // Call API to get weekly trend analysis
+    const response = await fetch(`(link ,unavailable));
+    const data = await response.json();
+    return data.analysis;
+  }
+  
+  async function getProductInfo(productID) {
+    // Call API to get product information
+    const response = await fetch((link ,unavailable));
+    const data = await response.json();
+    return data.info;
+  }
+  
+  app.post('/dialogflow', async (req, res) => {
+    const agent = new dialogflow.Agent({ intentMap });
+    const response = await agent.handleRequest(req.body);
+    res.json(response);
+  });
+  
+  app.listen(3000, () => {
+    console.log('Server listening on port 3000');
+  });
+  
+  
